@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,18 +16,39 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject[] _enemyes; // Противники
     [SerializeField] private float _rotationSpeed;  // Швидкість повороту
 
-    private GameObject _nearestObj = null;
+    [SerializeField] private GameObject _fireBallPrefab;
+    [SerializeField] private Transform _firePosition;
 
+    [SerializeField] private int _coinsCount = 0;
+    
+
+    private GameObject _nearestObj = null;
+    private float _timeBtwShots = 1.0f;
+    public static Action OnMagnitedCoins;
+    
     // Start is called before the first frame update
     void Start()
     {
         _enemyes = GameObject.FindGameObjectsWithTag("Enemy");
+        Coins.OnCoinPickup += AddCoins;
+        FortuneWheel.OnWinCoins += AddCoins;
+    }
+
+    private void OnDestroy()
+    {
+        Coins.OnCoinPickup -= AddCoins;
+        FortuneWheel.OnWinCoins -= AddCoins;
+    }
+
+    private void AddCoins(int countCoins)
+    {
+        _coinsCount += countCoins;
+        Debug.Log($"COINT: {_coinsCount}");
     }
 
     // Update is called once per frame
     void Update()
     {
-
         GetNearestEnemy();
 
         if (_joystickDetector.IsMoved)
@@ -35,14 +57,31 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (_nearestObj != null)
+            if (_nearestObj != null && _anim.GetBool("run") == false)
             {
                 var direction = _nearestObj.transform.position - transform.position;
-                direction = direction.normalized;
+                direction.y = direction.normalized.y;
                 Rotation(direction);
+                _anim.SetBool("attack", true);
             }
+
             _anim.SetBool("run", false);
         }
+
+        if (_enemyes.Length == 0)
+        {
+            OnMagnitedCoins?.Invoke();
+        }
+    }
+
+    public void Shoot(GameObject bulletPreffab)
+    {
+        
+        //Instantiate(_fireBallPrefab, _firePosition.transform.position, Quaternion.AngleAxis(transform.rotation.y-90.0f, transform.up));
+        Instantiate(_fireBallPrefab, _firePosition.transform.position, transform.rotation);
+        //Instantiate(_fireBallPrefab, _firePosition.transform.position, Quaternion.AngleAxis(transform.rotation.y+90.0f, transform.up));
+        
+        _anim.SetBool("attack", false);
     }
 
     public void StepSFX()
@@ -50,28 +89,43 @@ public class PlayerController : MonoBehaviour
         AudioManager.PlaySFX(_stepSFX);
     }
 
-
     public void GetNearestEnemy()
     {
-        var nearestDist = float.MaxValue;
-
-        foreach (var enemy in _enemyes)
+        try
         {
-            if (Vector3.Distance(this.transform.position, enemy.transform.position) < nearestDist)
+            var nearestDist = float.MaxValue;
+            foreach (var enemy in _enemyes)
             {
-                nearestDist = Vector3.Distance(this.transform.position, enemy.transform.position);
-                _nearestObj = enemy;
+                if (Vector3.Distance(this.transform.position, enemy.transform.position) < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(this.transform.position, enemy.transform.position);
+                    _nearestObj = enemy;
+                    Debug.DrawLine(this.transform.position, _nearestObj.transform.position, Color.red);
+                }
             }
         }
-        Debug.DrawLine(this.transform.position, _nearestObj.transform.position, Color.red);
+
+        catch
+        {
+            _enemyes = GameObject.FindGameObjectsWithTag("Enemy");
+        }
+         
     }
 
     public void Rotation(Vector3 direction)
     {
+        direction.y = 0;
         var rotation = Quaternion.LookRotation(direction, transform.up);
+        //transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * _rotationSpeed);
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * _rotationSpeed);
     }
-
+    //public void Rotation(Vector3 direction)
+    //{
+    //    direction.y = 0;
+    //    Vector3 targetForward = Vector3.RotateTowards(transform.forward, direction.normalized, _rotationSpeed * Time.deltaTime, .1f);
+    //    Quaternion newRotate = Quaternion.LookRotation(targetForward);
+    //    transform.rotation = newRotate;
+    //}
     private void Movement()
     {
         _anim.SetBool("run", true);
@@ -90,7 +144,7 @@ public class PlayerController : MonoBehaviour
                 _anim.SetFloat("speed", Mathf.Abs(_joystickDetector.Direction.y));
             }
             
-            transform.rotation = Quaternion.LookRotation(new Vector3(_joystickDetector.Direction.x, 0f, _joystickDetector.Direction.y));
+            transform.rotation = Quaternion.LookRotation(new Vector3(_joystickDetector.Direction.x, 0.0f, _joystickDetector.Direction.y));
         }
             //transform.rotation = Quaternion.LookRotation(_rigid.velocity);
         
