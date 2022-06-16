@@ -15,7 +15,9 @@ public class FortuneWheel : MonoBehaviour
     [SerializeField] private GameObject _canvasWheel;
     [SerializeField] private GameObject _dealer;
     [SerializeField] TMP_Text winningText;
-    
+    [SerializeField] private SFXType _sfxWheel;
+    [SerializeField] private SFXType _sfxWin;
+
     private bool _turned;
     private int _coinsCount;
     public static Action<int> OnWinCoins;
@@ -35,33 +37,34 @@ public class FortuneWheel : MonoBehaviour
         StartCoroutine(TurnWheel());
     }
 
+    private void PlayFortuneWheel()
+    {
+        AudioManager.PlaySFX(_sfxWheel);
+    }
+
+    private void PlayWin()
+    {
+        AudioManager.PlaySFX(_sfxWin);
+    }
+
+    private void Update()
+    {
+        
+    }
 
     private IEnumerator TurnWheel()
     {
         _turned = true;
-        _numberOfTurns = UnityEngine.Random.Range(8, 32);
+        _numberOfTurns = UnityEngine.Random.Range(56, 96);
         //Debug.Log(_numberOfTurns);
-        _speedWheel = 0.1f;
         for (int i = 0; i < _numberOfTurns; i++)
         {
             transform.Rotate(0, 0, 22.5f);
+            PlayFortuneWheel();
 
-            if (i > Mathf.RoundToInt(_numberOfTurns * 0.5f))
-            {
-                _speedWheel = 0.1f;
-            }
+            var val = (int)((float)i / (float)_numberOfTurns * 10.0f);
 
-            if (i > Mathf.RoundToInt(_numberOfTurns * 0.95f))
-            {
-                _speedWheel = 0.2f;
-            }
-
-            if (i > Mathf.RoundToInt(_numberOfTurns * 0.0f))
-            {
-                _speedWheel = 0.3f;
-            }
-
-            yield return new WaitForSeconds(_speedWheel);
+            yield return new WaitForSeconds(0.01f * val);//_speedWheel);
         }
 
         if (Mathf.RoundToInt(transform.eulerAngles.z) % 45 != 0)
@@ -108,11 +111,13 @@ public class FortuneWheel : MonoBehaviour
         }
 
         OnWinCoins(_coinsCount);
-
+        PlayWin();
         _turned = false;
         yield return new WaitForSeconds(1);
         Destroy(_canvasWheel);
         Destroy(_dealer);
+
+        
         
     }
 }

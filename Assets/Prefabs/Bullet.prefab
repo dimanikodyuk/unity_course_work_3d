@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 2716043040591832980}
   - component: {fileID: 8982467258189126130}
   - component: {fileID: 9077266969083494235}
-  - component: {fileID: 4187554784992304987}
   - component: {fileID: -6358405854226683869}
   - component: {fileID: -3547811076733577638}
   - component: {fileID: -1196570315638664740}
+  - component: {fileID: 5143712425342268090}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -84,19 +84,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!135 &4187554784992304987
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4935306625144644292}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-6358405854226683869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,7 +100,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   _destroyEffect: {fileID: 0}
-  _bulletSpeed: 10
+  _bulletSpeed: 14
   _lifeTime: 4
   _distance: 4
   _rb: {fileID: -3547811076733577638}
@@ -145,6 +132,19 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.6
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!135 &5143712425342268090
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4935306625144644292}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2504585598812147027
 PrefabInstance:

@@ -684,7 +684,10 @@ MonoBehaviour:
   _smoothSpeedWheel: 0
   _turnWheel: {fileID: 7330594316675528878}
   _canvasWheel: {fileID: 7093239269136342408}
+  _dealer: {fileID: 0}
   winningText: {fileID: 7093239269009199812}
+  _sfxWheel: 1
+  _sfxWin: 2
 --- !u!1 &7093239269852280929
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,8 +6,9 @@ using UnityEngine.Audio;
 public enum SFXType
 {
     // Player
-    Step
-
+    Step,
+    FortuneWheel,
+    FortuneWheelWin,
 }
 
 public enum MusicType
@@ -16,6 +17,8 @@ public enum MusicType
     gameBackground,
     dieMenu,
     completeLevel,
+
+    
 }
 
 public class AudioManager : MonoBehaviour
