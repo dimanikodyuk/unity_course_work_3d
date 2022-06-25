@@ -18,6 +18,8 @@ public class FortuneWheel : MonoBehaviour
     [SerializeField] private SFXType _sfxWheel;
     [SerializeField] private SFXType _sfxWin;
 
+    [SerializeField] private GameObject _winParticles;
+
     private bool _turned;
     private int _coinsCount;
     public static Action<int> OnWinCoins;
@@ -112,6 +114,8 @@ public class FortuneWheel : MonoBehaviour
 
         OnWinCoins(_coinsCount);
         PlayWin();
+        _winParticles.SetActive(true);
+        //Instantiate(_winParticles, new Vector3(transform.position.x, transform.position.y, -140), Quaternion.identity);
         _turned = false;
         yield return new WaitForSeconds(1);
         Destroy(_canvasWheel);

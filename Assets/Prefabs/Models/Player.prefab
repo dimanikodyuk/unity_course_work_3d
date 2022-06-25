@@ -850,14 +850,24 @@ MonoBehaviour:
   _joystickDetector: {fileID: 0}
   _speed: 6
   _targer: {fileID: 5809776945768968580}
+  _player: {fileID: 0}
   _anim: {fileID: 5907113192678596422}
   _rigid: {fileID: 5813609040669991210}
   _stepSFX: 0
   _enemyes: []
   _rotationSpeed: 4
+  _runParticle: {fileID: 0}
   _fireBallPrefab: {fileID: 4935306625144644292, guid: 79e704c2abbf8d64a89dbfa453167247,
     type: 3}
   _firePosition: {fileID: 5813609039174408454}
+  _firePositionL: {fileID: 0}
+  _firePositionR: {fileID: 0}
+  _coinsCount: 0
+  _health: 0
+  _weapon1: {fileID: 5813563314938107026}
+  _weapon2: {fileID: 5812061925422541620}
+  _weapon3: {fileID: 5812073416123729492}
+  _isTripleShoot: 0
 --- !u!114 &5813609040669991206
 MonoBehaviour:
   m_ObjectHideFlags: 0

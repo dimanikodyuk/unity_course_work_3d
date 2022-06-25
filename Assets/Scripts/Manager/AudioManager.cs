@@ -9,6 +9,7 @@ public enum SFXType
     Step,
     FortuneWheel,
     FortuneWheelWin,
+    ButtonClick,
 }
 
 public enum MusicType
@@ -47,7 +48,7 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         SetVolume();
-        //GameControll.onChangeVolume += SetVolume;
+        GameController.OnChangeVolumeSetting += SetVolume;
         //DiedMenu.onStopAllSounds += StopAllSounds;
         //CompleteLevel.onAllSoundStop += StopAllSounds;
     }

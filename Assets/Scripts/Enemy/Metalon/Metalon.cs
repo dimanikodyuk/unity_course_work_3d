@@ -157,7 +157,7 @@ public class Metalon : MonoBehaviour
         Destroy(gameObject);
         for (int i = 0; i < UnityEngine.Random.Range(5, 10); i++)
         {
-            Instantiate(_coinsPrefab, new Vector3(transform.position.x + UnityEngine.Random.Range(0, 4), transform.position.y, transform.position.z + UnityEngine.Random.Range(0, 4)), Quaternion.identity);
+            Instantiate(_coinsPrefab, new Vector3(transform.position.x + UnityEngine.Random.Range(0, 4), transform.position.y, transform.position.z + UnityEngine.Random.Range(0, 4)), Quaternion.AngleAxis(UnityEngine.Random.Range(0, 180), transform.up));
         }
     }
 

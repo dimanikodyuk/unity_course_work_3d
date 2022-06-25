@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -27,6 +28,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int _coinsCount = 0;
     [SerializeField] private int _health;
 
+    [SerializeField] private GameObject _weapon1;
+    [SerializeField] private GameObject _weapon2;
+    [SerializeField] private GameObject _weapon3;
+
+    [SerializeField] private Texture2D _healthTex;
+
+    [SerializeField] private TMP_Text _coinsValueText;
+
     private GameObject _nearestObj = null;
     private float _timeBtwShots = 1.0f;
     private bool _isDead = false;
@@ -38,23 +47,40 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _enemyes = GameObject.FindGameObjectsWithTag("Enemy");
-        Coins.OnCoinPickup += AddCoins;
-        FortuneWheel.OnWinCoins += AddCoins;
+        Coins.OnCoinPickup += CoinsChange;
+        FortuneWheel.OnWinCoins += CoinsChange;
         Metalon.OnDamaged += TakeDamage;
+
+        CheckWeapon();
     }
 
     private void OnDestroy()
     {
-        Coins.OnCoinPickup -= AddCoins;
-        FortuneWheel.OnWinCoins -= AddCoins;
+        Coins.OnCoinPickup -= CoinsChange;
+        FortuneWheel.OnWinCoins -= CoinsChange;
         Metalon.OnDamaged -= TakeDamage;
     }
 
-    private void AddCoins(int countCoins)
+
+    private void CheckWeapon()
     {
-        _coinsCount += countCoins;
-        Debug.Log($"COINT: {_coinsCount}");
+        if (WeaponController.weapon2 == true)
+        {
+            _weapon1.SetActive(false);
+            _weapon2.SetActive(true);
+            _weapon3.SetActive(false);
+
+
+        }
+        else if (WeaponController.weapon3 == true)
+        {
+            _weapon1.SetActive(false);
+            _weapon2.SetActive(false);
+            _weapon3.SetActive(true);
+        }
+
     }
+
 
     // Update is called once per frame
     void Update()
@@ -96,6 +122,11 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("hit", true);
         _health -= damage;
         Debug.Log($"HEALTH: {_health}");
+    }
+
+    private void CoinsChange(int coins)
+    {
+        _coinsValueText.text = (_coinsCount + coins).ToString();
     }
 
     public void RunParticle()
