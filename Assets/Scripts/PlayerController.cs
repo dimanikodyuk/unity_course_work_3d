@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -26,20 +27,35 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _firePositionR;
 
     [SerializeField] private int _coinsCount = 0;
-    [SerializeField] private int _health;
 
     [SerializeField] private GameObject _weapon1;
     [SerializeField] private GameObject _weapon2;
     [SerializeField] private GameObject _weapon3;
 
-    [SerializeField] private Texture2D _healthTex;
-
     [SerializeField] private TMP_Text _coinsValueText;
+    [SerializeField] private Button _pauseButton;
+
+    // -- HEALTH && EXP BAR -- //
+    [SerializeField] private float _health;
+    [SerializeField] private float _maxHealth;
+    [SerializeField] private Slider _sliderHealth;
+    [SerializeField] private GameObject _healthBarUI;
+    [SerializeField] private TMP_Text _playerHealthText;
+
+    [SerializeField] private float _exp;
+    [SerializeField] private float _maxEXP;
+    [SerializeField] private Slider _sliderEXP;
+    [SerializeField] private TMP_Text _playerEXPText;
+
+    
+    
+    // -- END HEALTH && EXP BAR -- //
 
     private GameObject _nearestObj = null;
     private float _timeBtwShots = 1.0f;
     private bool _isDead = false;
     public static Action OnMagnitedCoins;
+    public static Action OnPause;
     public bool _isTripleShoot;
     public static int _angleTripleShoot = 90;
     
@@ -47,20 +63,77 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _enemyes = GameObject.FindGameObjectsWithTag("Enemy");
-        Coins.OnCoinPickup += CoinsChange;
         FortuneWheel.OnWinCoins += CoinsChange;
         Metalon.OnDamaged += TakeDamage;
-
+        Metalon.OnDead += TakeEXP;
+        _pauseButton.onClick.AddListener(Paused);
         CheckWeapon();
+
+        _health = _maxHealth;
+        _sliderHealth.value = CalculateHealth();
+        _playerHealthText.text = _health.ToString();
     }
 
     private void OnDestroy()
     {
-        Coins.OnCoinPickup -= CoinsChange;
+        //Coins.OnCoinPickup -= CoinsChange;
         FortuneWheel.OnWinCoins -= CoinsChange;
         Metalon.OnDamaged -= TakeDamage;
+        Metalon.OnDead -= TakeEXP;
     }
 
+    private void Paused()
+    {
+        OnPause?.Invoke();
+    }
+
+    private float CalculateHealth()
+    {
+        return _health / _maxHealth;
+    }
+
+    private float CalculateExp()
+    {
+        return _exp / _maxEXP;
+    }
+
+    private void HealthCheck()
+    {
+        float angle = 0f;
+        Vector3 axis;
+        transform.rotation.ToAngleAxis(out angle, out axis);
+        Debug.Log(angle);
+        _healthBarUI.transform.rotation = Quaternion.AngleAxis(0, new Vector3(0, 1, 0));
+
+
+        _sliderHealth.value = CalculateHealth();
+        _playerHealthText.text = _health.ToString();
+        if (_health < _maxHealth)
+        {
+            _healthBarUI.SetActive(true);
+        }
+
+        if (_health > _maxHealth)
+        {
+            _health = _maxHealth;
+        }
+
+        if (_health <= 0)
+        {
+            //StartCoroutine(DiedChest());
+            Destroy(gameObject);
+        }
+    }
+
+    private void ExpCheck()
+    {
+        _sliderEXP.value = CalculateExp();
+        _playerEXPText.text = _exp.ToString();
+        if (_exp > _maxEXP)
+        {
+            _exp = _maxEXP;
+        }
+    }
 
     private void CheckWeapon()
     {
@@ -86,6 +159,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         GetNearestEnemy();
+        HealthCheck();
+        ExpCheck();
 
         if (_joystickDetector.IsMoved)
         {
@@ -124,8 +199,15 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"HEALTH: {_health}");
     }
 
+    private void TakeEXP(int exp)
+    {
+        _exp = _exp + exp;
+        _playerEXPText.text = _exp.ToString();
+    }
+
     private void CoinsChange(int coins)
     {
+        Debug.Log($"+{coins}");
         _coinsValueText.text = (_coinsCount + coins).ToString();
     }
 
@@ -193,14 +275,6 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * _rotationSpeed);
     }
 
-    //public void Rotation(Vector3 direction)
-    //{
-    //    direction.y = 0;
-    //    Vector3 targetForward = Vector3.RotateTowards(transform.forward, direction.normalized, _rotationSpeed * Time.deltaTime, .1f);
-    //    Quaternion newRotate = Quaternion.LookRotation(targetForward);
-    //    transform.rotation = newRotate;
-    //}
-
     private void Movement()
     {
         _anim.SetBool("attack", false);
@@ -223,5 +297,14 @@ public class PlayerController : MonoBehaviour
             
             transform.rotation = Quaternion.LookRotation(new Vector3(_joystickDetector.Direction.x, 0.0f, _joystickDetector.Direction.y));
         }        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Coin")
+        {
+            _coinsCount = _coinsCount + UnityEngine.Random.Range(10, 100);
+            _coinsValueText.text = _coinsCount.ToString();
+        }
     }
 }

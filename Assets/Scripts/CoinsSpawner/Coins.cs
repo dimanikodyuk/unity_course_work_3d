@@ -8,19 +8,22 @@ public class Coins : MonoBehaviour
     
     [SerializeField] private float _speed;
     [SerializeField] private bool _isMagnet;
-    [SerializeField] private int _coinsWeigh = 1; 
+    
     private GameObject _player;
-    public static Action<int> OnCoinPickup;
+    //private int _coinsWeigh;
+
+    //public static Action<int> OnCoinPickup;
 
     void Start()
     {
         PlayerController.OnMagnitedCoins += ChangeMagnet;
         _player = GameObject.FindGameObjectWithTag("Player");
+        //_coinsWeigh = UnityEngine.Random.Range(40, 400);
     }
 
     private void PickupCoins()
     {
-        OnCoinPickup?.Invoke(_coinsWeigh);
+        //OnCoinPickup?.Invoke(_coinsWeigh);
     }
 
     private void OnDestroy()
@@ -46,12 +49,11 @@ public class Coins : MonoBehaviour
 
     private void CoinMagnet(Vector3 direction)
     {
-        
         transform.position += direction * _speed * Time.deltaTime;
 
         if ((_player.transform.position - gameObject.transform.position).sqrMagnitude < 0.01f)
         {
-            PickupCoins();
+            //PickupCoins();
             Destroy(gameObject);
         }
     }

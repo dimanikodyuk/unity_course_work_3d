@@ -12,12 +12,13 @@ public class CameraTarget : MonoBehaviour
 
     private void Start()
     {
-        _offset = new Vector3(0, _heightCamera, _zPosCamera);
+        
     }
 
 
     private void Update()
     {
+        _offset = new Vector3(0, _heightCamera, _zPosCamera);
         gameObject.transform.position = Vector3.Lerp(new Vector3(0, transform.position.y, transform.position.z), new Vector3(0, _target.transform.position.y, _target.transform.position.z) + _offset, _smothSpeed * Time.deltaTime);
     }
 }

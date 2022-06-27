@@ -27,7 +27,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 16
   _isMagnet: 0
-  _coinsWeigh: 1
 --- !u!1001 &1876839132410149597
 PrefabInstance:
   m_ObjectHideFlags: 0

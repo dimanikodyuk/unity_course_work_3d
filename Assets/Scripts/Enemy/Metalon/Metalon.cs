@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Metalon : MonoBehaviour
 {
@@ -15,22 +17,35 @@ public class Metalon : MonoBehaviour
     [SerializeField] private GameObject _player;
     [SerializeField] private List<Transform> _enemySearchPoint;
     [SerializeField] private List<GameObject> _enemies = new List<GameObject>();
-    [SerializeField] private int _healthCount;
-    [SerializeField] private Texture2D _healthTex;
     [SerializeField] private GameObject _diedParticle;
     [SerializeField] private GameObject _coinsPrefab;
-    
+
+    // -- HEALTH BAR -- //
+    [SerializeField] private float _health;
+    [SerializeField] private float _maxHealth;
+
+    [SerializeField] private Slider _slider;
+    [SerializeField] private GameObject _healthBarUI;
+    [SerializeField] private TMP_Text _enemyHealthText;
+    // -- END HEALTH BAR -- //
     
     private int iCount = 0;
     private bool _getTarget = false;
+    private static int _exp = 10;
     private static string _playerTag = "Player";
     public static Action<int> OnDamaged;
+    public static Action<int> OnDead;
 
+    
 
     private void Start()
     {
         _navMesh.updateRotation = false;
         MetalonTrigger.OnGetTarget += CheckTarget;
+
+        _health = _maxHealth;
+        _slider.value = CalculateHealth();
+        _enemyHealthText.text = _health.ToString();
     }
 
     private void OnDestroy()
@@ -47,6 +62,11 @@ public class Metalon : MonoBehaviour
         {
             _anim.SetBool("run", false);
         }
+    }
+
+    private float CalculateHealth()
+    {
+        return _health / _maxHealth;
     }
 
 
@@ -80,37 +100,42 @@ public class Metalon : MonoBehaviour
             _anim.SetBool("attack", false);
         }
 
-        if (_healthCount <= 0)
+
+        HealthCheck();
+
+
+    }
+
+    private void HealthCheck()
+    {
+        float angle = 0f;
+        Vector3 axis;
+        transform.rotation.ToAngleAxis(out angle, out axis);
+        Debug.Log(angle);
+        _healthBarUI.transform.rotation = Quaternion.AngleAxis(0, new Vector3(0, 1, 0));
+
+
+        _slider.value = CalculateHealth();
+        _enemyHealthText.text = _health.ToString();
+        if (_health < _maxHealth)
+        {
+            _healthBarUI.SetActive(true);
+        }
+
+        if (_health > _maxHealth)
+        {
+            _health = _maxHealth;
+        }
+
+        if (_health <= 0)
         {
             StartCoroutine(DiedChest());
         }
-
-        //if (_navMesh.remainingDistance <= 4 && _getTarget)
-        //{
-        //    _navMesh.isStopped = true;
-        //    _anim.SetBool("run", false);
-        //    _anim.SetBool("attack", true);
-        //}
-        //else
-        //{
-        //    _navMesh.isStopped = false;
-        //    _anim.SetBool("attack", false);
-        //}
     }
 
     public void Damaged(int damage)
     {
         OnDamaged?.Invoke(damage);
-    }
-
-    private void OnGUI()
-    {
-        if (_healthCount >= 0)
-        {
-            Vector3 posScr = Camera.main.WorldToScreenPoint(new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 2, gameObject.transform.position.z));
-            GUI.Box(new Rect(posScr.x - 10, Screen.height - posScr.y - 12, 50, 30), "");
-            GUI.DrawTexture(new Rect(posScr.x - 10, Screen.height - posScr.y - 12, 10 * _healthCount, 30), _healthTex);
-        }
     }
 
     private void Rotation(Vector3 direction)
@@ -144,13 +169,15 @@ public class Metalon : MonoBehaviour
     private IEnumerator HitMetalon()
     {
         _anim.SetBool("hit", true);
-        _healthCount--;
+        _health = _health - WeaponController.demage;
         yield return new WaitForSeconds(0.5f);
         _anim.SetBool("hit", false);
     }
 
     private IEnumerator DiedChest()
     {
+        OnDead?.Invoke(_exp);
+        _healthBarUI.SetActive(false);
         _anim.SetBool("die", true);
         yield return new WaitForSeconds(1.5f);
         Instantiate(_diedParticle, transform.position, Quaternion.identity);

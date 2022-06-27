@@ -11,18 +11,22 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject _audioManager;
     [SerializeField] private GameObject _optionsCanvas;
     [SerializeField] private GameObject _gameMenuCanvas;
+    [SerializeField] private GameObject _pausedMenuCanvas;
 
     [SerializeField] private TMP_Text _soundVolumeValue;
     [SerializeField] private TMP_Text _sfxVolumeValue;
     [SerializeField] private SFXType _buttonClickSFX;
 
     public static Action OnChangeVolumeSetting;
+    private bool _isPaused = false;
+
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
         DontDestroyOnLoad(_audioManager);
         DontDestroyOnLoad(_optionsCanvas);
         DontDestroyOnLoad(_gameMenuCanvas);
+        DontDestroyOnLoad(_pausedMenuCanvas);
     }
 
 
@@ -36,6 +40,12 @@ public class GameController : MonoBehaviour
         Options.OnSFXChangeVolume += SFXVolumeSetting;
         Options.OnSoundChangeVolume += SoundVolumeSetting;
 
+        PlayerController.OnPause += PausedGame;
+
+        PauseMenu.OnResume += PausedGame;
+        PauseMenu.OnOptions += OptionsButtonPressed;
+        PauseMenu.OnMainMenu += MainMenuOpen;
+        PauseMenu.OnExit += ExitButtonPressed;
 
     }
 
@@ -45,6 +55,7 @@ public class GameController : MonoBehaviour
         MainMenu.OnOptionsButtonPress -= OptionsButtonPressed;
         MainMenu.OnExitButtonPress -= ExitButtonPressed;
     }
+
 
     // -- MAIN MENU BUTTON -- //
 
@@ -104,6 +115,32 @@ public class GameController : MonoBehaviour
 
     // -- EXIT OPTION MENU BUTTON -- //
 
+    // -- PAUSED MENU -- //
+    private void PausedGame()
+    {
+        PlayButtonCLickSFX();
+        _isPaused = !_isPaused;
+        if (_isPaused == true)
+        {
+            _pausedMenuCanvas.SetActive(true);
+            Time.timeScale = 0;
+        }
+        else
+        {
+            _pausedMenuCanvas.SetActive(false);
+            Time.timeScale = 1;
+        }
+    }
+
+    private void MainMenuOpen()
+    {
+        PlayButtonCLickSFX();
+        SceneManager.LoadScene(0);
+    }
+
+   
+
+    // -- EXIT PAUSED MENU -- //
 
 
     // -- STORAGE DATA -- //

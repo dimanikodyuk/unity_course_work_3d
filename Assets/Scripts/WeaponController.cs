@@ -7,4 +7,6 @@ public class WeaponController : MonoBehaviour
     public static bool weapon1 = false;
     public static bool weapon2 = true;
     public static bool weapon3 = false;
+
+    public static int demage = 10;
 }
