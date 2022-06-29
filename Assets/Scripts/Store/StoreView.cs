@@ -1,18 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StoreView : MonoBehaviour
 {
     [SerializeField] private List<WizardWeaponStoreData> _storeItems = new List<WizardWeaponStoreData>();
     [SerializeField] private WizardItem _storeItemPrefab;
     [SerializeField] private Transform _content;
-
+    [SerializeField] private Button _closeShopButton;
+    
     private List<WizardItem> _wizardItems = new List<WizardItem>();
+    public static Action OnClosedShop;
 
     void Start()
     {
         PrepareStoreItems();
+        _closeShopButton.onClick.AddListener(ClosedShop);
     }
 
     private void PrepareStoreItems()
@@ -23,6 +28,11 @@ public class StoreView : MonoBehaviour
             CreateStoreItem(storeData);
         }
 
+    }
+
+    private void ClosedShop()
+    {
+        OnClosedShop?.Invoke();
     }
 
     private void CreateStoreItem(WizardWeaponStoreData wizardStoreData)

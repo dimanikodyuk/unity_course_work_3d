@@ -111,7 +111,6 @@ public class Metalon : MonoBehaviour
         float angle = 0f;
         Vector3 axis;
         transform.rotation.ToAngleAxis(out angle, out axis);
-        Debug.Log(angle);
         _healthBarUI.transform.rotation = Quaternion.AngleAxis(0, new Vector3(0, 1, 0));
 
 
@@ -129,6 +128,7 @@ public class Metalon : MonoBehaviour
 
         if (_health <= 0)
         {
+            _navMesh.isStopped = true;
             StartCoroutine(DiedChest());
         }
     }

@@ -23,6 +23,7 @@ public class FortuneWheel : MonoBehaviour
     private bool _turned;
     private int _coinsCount;
     public static Action<int> OnWinCoins;
+    public static Action OnOpenPortal;
     
 
     // Start is called before the first frame update
@@ -120,8 +121,7 @@ public class FortuneWheel : MonoBehaviour
         yield return new WaitForSeconds(1);
         Destroy(_canvasWheel);
         Destroy(_dealer);
+        OnOpenPortal?.Invoke();
 
-        
-        
     }
 }

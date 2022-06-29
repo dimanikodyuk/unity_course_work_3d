@@ -10,6 +10,8 @@ public enum SFXType
     FortuneWheel,
     FortuneWheelWin,
     ButtonClick,
+    Shoot,
+    PortalOpen,
 }
 
 public enum MusicType

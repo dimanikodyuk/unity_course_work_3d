@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class ChestMonster : MonoBehaviour
     [SerializeField] private GameObject _coinsPrefab;
 
     private static string _bulletTag = "Bullet";
+    public static Action OnPortalOpen;
 
     void Update()
     {
@@ -35,10 +37,11 @@ public class ChestMonster : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         Instantiate(_diedParticle, transform.position, Quaternion.identity);
         Destroy(gameObject);
-        for (int i = 0; i < Random.Range(5, 10); i++)
+        for (int i = 0; i < UnityEngine.Random.Range(5, 10); i++)
         {
-            Instantiate(_coinsPrefab, new Vector3(transform.position.x + Random.Range(0, 4), transform.position.y, transform.position.z + Random.Range(0, 4)), Quaternion.identity);
+            Instantiate(_coinsPrefab, new Vector3(transform.position.x + UnityEngine.Random.Range(0, 4), transform.position.y, transform.position.z + UnityEngine.Random.Range(0, 4)), Quaternion.identity);
         }
+        OnPortalOpen?.Invoke();
     }
 
     private void OnGUI()

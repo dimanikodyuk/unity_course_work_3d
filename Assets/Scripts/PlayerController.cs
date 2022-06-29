@@ -3,21 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private JoystickDetector _joystickDetector;
-    [SerializeField] private float _speed = 12f; // Швидкість
-    [SerializeField] private Transform _targer;  // 
+    [SerializeField] private float _speed = 12f;
+    [SerializeField] private Transform _targer;  
     [SerializeField] private GameObject _player;
-    [SerializeField] private Animator _anim;     // Аніматор
+    [SerializeField] private Animator _anim;     
     [SerializeField] private Rigidbody _rigid;   
 
-    [SerializeField] private SFXType _stepSFX;   // Звук кроків
+    [SerializeField] private SFXType _stepSFX;   
+    [SerializeField] private SFXType _shootSFX;   
 
-    [SerializeField] private GameObject[] _enemyes; // Противники
-    [SerializeField] private float _rotationSpeed;  // Швидкість повороту
+    [SerializeField] private GameObject[] _enemyes; 
+    [SerializeField] private float _rotationSpeed;  
 
     [SerializeField] private GameObject _runParticle;
 
@@ -27,10 +29,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _firePositionR;
 
     [SerializeField] private int _coinsCount = 0;
-
-    [SerializeField] private GameObject _weapon1;
-    [SerializeField] private GameObject _weapon2;
-    [SerializeField] private GameObject _weapon3;
 
     [SerializeField] private TMP_Text _coinsValueText;
     [SerializeField] private Button _pauseButton;
@@ -67,11 +65,21 @@ public class PlayerController : MonoBehaviour
         Metalon.OnDamaged += TakeDamage;
         Metalon.OnDead += TakeEXP;
         _pauseButton.onClick.AddListener(Paused);
-        CheckWeapon();
 
         _health = _maxHealth;
         _sliderHealth.value = CalculateHealth();
         _playerHealthText.text = _health.ToString();
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            PlayerPrefs.SetInt("Point", 0);
+            _coinsCount = 0;
+        }
+        else
+        {
+            _coinsCount = PlayerPrefs.GetInt("Point");
+        }
+        
+        _coinsValueText.text = _coinsCount.ToString();
     }
 
     private void OnDestroy()
@@ -102,7 +110,6 @@ public class PlayerController : MonoBehaviour
         float angle = 0f;
         Vector3 axis;
         transform.rotation.ToAngleAxis(out angle, out axis);
-        Debug.Log(angle);
         _healthBarUI.transform.rotation = Quaternion.AngleAxis(0, new Vector3(0, 1, 0));
 
 
@@ -133,25 +140,6 @@ public class PlayerController : MonoBehaviour
         {
             _exp = _maxEXP;
         }
-    }
-
-    private void CheckWeapon()
-    {
-        if (WeaponController.weapon2 == true)
-        {
-            _weapon1.SetActive(false);
-            _weapon2.SetActive(true);
-            _weapon3.SetActive(false);
-
-
-        }
-        else if (WeaponController.weapon3 == true)
-        {
-            _weapon1.SetActive(false);
-            _weapon2.SetActive(false);
-            _weapon3.SetActive(true);
-        }
-
     }
 
 
@@ -196,7 +184,6 @@ public class PlayerController : MonoBehaviour
     {
         _anim.SetBool("hit", true);
         _health -= damage;
-        Debug.Log($"HEALTH: {_health}");
     }
 
     private void TakeEXP(int exp)
@@ -207,8 +194,9 @@ public class PlayerController : MonoBehaviour
 
     private void CoinsChange(int coins)
     {
-        Debug.Log($"+{coins}");
-        _coinsValueText.text = (_coinsCount + coins).ToString();
+        _coinsCount = _coinsCount + coins;
+        _coinsValueText.text = _coinsCount.ToString();
+        PlayerPrefs.SetInt("Point", _coinsCount);
     }
 
     public void RunParticle()
@@ -219,6 +207,8 @@ public class PlayerController : MonoBehaviour
     public void Shoot(GameObject bulletPreffab)
     {
         _anim.SetBool("run", false);
+        AudioManager.PlaySFX(_shootSFX);
+
         if (_isTripleShoot == true)
         {
             float angle = 0f;
@@ -303,7 +293,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Coin")
         {
-            _coinsCount = _coinsCount + UnityEngine.Random.Range(10, 100);
+            _coinsCount = _coinsCount + UnityEngine.Random.Range(10, 40);
             _coinsValueText.text = _coinsCount.ToString();
         }
     }

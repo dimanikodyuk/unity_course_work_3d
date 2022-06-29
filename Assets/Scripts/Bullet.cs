@@ -7,7 +7,6 @@ public class Bullet : MonoBehaviour
     [SerializeField] private LayerMask _whatIsSolid;
     [SerializeField] GameObject _destroyEffect;
 
-    [SerializeField] private float _bulletSpeed;
     [SerializeField] private float _lifeTime;
     [SerializeField] private float _distance;
 
@@ -20,21 +19,13 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        _rb.velocity = gameObject.transform.forward * _bulletSpeed;
+        _rb.velocity = gameObject.transform.forward * WeaponController.shootSpeed;
     }
 
     private void DestroyBullet()
     {
         Destroy(gameObject);
     }
-
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if (other.gameObject.tag == "Enemy")
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //}
 
     private void OnCollisionEnter(Collision collision)
     {
